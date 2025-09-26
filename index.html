@@ -3,38 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Магазин "Продукты из деревни!"</title>
-    <link rel="stylesheet" href="styles/style.css">
+    <title>"Продукты из деревни!" - Фермерский магазин</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .product {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>🛒 Магазин "Продукты из деревни!"</h1>
-        <nav>
-            <a href="#products">Товары</a>
-            <a href="#about">О нас</a>
-            <a href="#contact">Контакты</a>
-        </nav>
-    </header>
+    <h1>🛒 Магазин "Продукты из деревни!"</h1>
+    <div id="products" class="loading">
+        Загрузка товаров...
+    </div>
 
-    <main>
-        <section id="products">
-            <h2>Наши товары</h2>
-            <div id="products-container" class="products-grid">
-                <!-- Товары будут загружаться через JavaScript -->
-            </div>
-        </section>
+    <script>
+        // Загрузка данных товаров
+        async function loadProducts() {
+            try {
+                const response = await fetch('products.json');
+                const products = await response.json();
+                displayProducts(products);
+            } catch (error) {
+                document.getElementById('products').innerHTML =
+                    '<p>❌ Ошибка загрузки товаров. Проверьте файл products.json</p>';
+                console.error('Ошибка:', error);
+            }
+        }
 
-        <section id="about">
-            <h2>О нашем магазине</h2>
-            <p>Свежие фермерские продукты напрямую от производителя</p>
-        </section>
-    </main>
+        function displayProducts(products) {
+            const container = document.getElementById('products');
+            container.innerHTML = '';
 
-    <footer id="contact">
-        <p>📞 Для заказа: +7 XXX XXX-XX-XX</p>
-        <p>💬 Telegram: <a href="https://t.me/your_bot">@your_bot</a></p>
-    </footer>
+            Object.values(products).forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+                productDiv.innerHTML = `
+                    <h3>${product.name || 'Без названия'}</h3>
+                    <p>${product.description || ''}</p>
+                    <p><strong>Цена: ${product.price || 0} руб.</strong></p>
+                    <p>Категория: ${product.category || 'Не указана'}</p>
+                    ${product.available ? '✅ В наличии' : '❌ Нет в наличии'}
+                `;
+                container.appendChild(productDiv);
+            });
+        }
 
-    <script src="js/app.js"></script>
+        // Загружаем товары при старте
+        loadProducts();
+    </script>
 </body>
 </html>
