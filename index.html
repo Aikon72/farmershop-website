@@ -4,65 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>"Продукты из деревни!" - Фермерский магазин</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .product {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-        .loading {
-            text-align: center;
-            padding: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
+<header>
     <h1>🛒 Магазин "Продукты из деревни!"</h1>
-    <div id="products" class="loading">
-        Загрузка товаров...
-    </div>
+    <nav>
+        <a href="#products">Товары</a>
+        <a href="#about">О нас</a>
+        <a href="#contact">Контакты</a>
+    </nav>
+</header>
 
-    <script>
-        // Загрузка данных товаров
-        async function loadProducts() {
-            try {
-                const response = await fetch('products.json');
-                const products = await response.json();
-                displayProducts(products);
-            } catch (error) {
-                document.getElementById('products').innerHTML =
-                    '<p>❌ Ошибка загрузки товаров. Проверьте файл products.json</p>';
-                console.error('Ошибка:', error);
-            }
-        }
+<main>
+    <section id="products">
+        <h2>Наши продукты</h2>
+        <div id="products-container" class="products-grid">
+            <div class="loading">Загрузка товаров...</div>
+        </div>
+    </section>
 
-        function displayProducts(products) {
-            const container = document.getElementById('products');
-            container.innerHTML = '';
+    <section id="about">
+        <h2>О нашем магазине</h2>
+        <p>Мы предлагаем натуральные фермерские продукты напрямую от производителей.
+            Доставка во вторник и субботу. С 9 до 16. Маршрут со временем прибытия публикуется в группе накануне дня доставки
+            • Минимальная сумма заказа для доставки - 1000р. Стоимость доставки 300 руб. При сумме заказа от 2500 рублей доставка бесплатно!
+            • При самовывозе из Перевалово предоставляется скидка 10%. Сумма заказа не ограничена.
+            • Всем участникам группы ко дню рождения предоставляется скидка 10%</p>
+    </section>
 
-            Object.values(products).forEach(product => {
-                const productDiv = document.createElement('div');
-                productDiv.className = 'product';
-                productDiv.innerHTML = `
-                    <h3>${product.name || 'Без названия'}</h3>
-                    <p>${product.description || ''}</p>
-                    <p><strong>Цена: ${product.price || 0} руб.</strong></p>
-                    <p>Категория: ${product.category || 'Не указана'}</p>
-                    ${product.available ? '✅ В наличии' : '❌ Нет в наличии'}
-                `;
-                container.appendChild(productDiv);
-            });
-        }
+    <section id="contact">
+        <h2>Контакты</h2>
+        <p>📞 Телефон: +7-922-268-64-92 </p>
+        <p>💬 Telegram: <a href="https://t.me/Andrew_pomogator_bot">@your_bot</a></p>
+    </section>
+</main>
 
-        // Загружаем товары при старте
-        loadProducts();
-    </script>
+<footer>
+    <p>&copy; 2025 Продукты из деревни. Все права защищены.</p>
+</footer>
+
+<script src="app.js"></script>
 </body>
 </html>
