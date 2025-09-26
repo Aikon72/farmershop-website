@@ -14,23 +14,40 @@ class ProductStore {
 
     async loadProducts() {
         try {
-            // Если API доступно - загружаем с сервера
-            const response = await fetch(`${API_BASE_URL}/api/products`);
-            this.products = await response.json();
+            // Загружаем данные из products.json
+            const response = await fetch('products.json');
+            const productsData = await response.json();
+
+            // Преобразуем объект в массив
+            this.products = Object.entries(productsData).map(([id, product]) => ({
+                id: id,
+                name: product.name || 'Без названия',
+                description: product.description || '',
+                price: product.price || 0,
+                category: product.category || 'Не указана',
+                available: product.available !== false,
+                stock: product.stock || 0,
+                amount: product.amount || '',
+                imageUrls: product.imageUrls || ['https://via.placeholder.com/300x200?text=Фото+товара']
+            }));
+
+            console.log('Загружено товаров:', this.products.length);
         } catch (error) {
-            console.log('API недоступно, используем локальные данные');
+            console.error('Ошибка загрузки товаров:', error);
             this.products = this.getLocalProducts();
         }
     }
 
     getLocalProducts() {
-        // Резервные данные на случай недоступности API
+        // Резервные данные
         return [
             {
-                id: "001",
+                id: "1",
                 name: "Мёд липовый",
                 description: "Натуральный липовый мёд",
-                price: 500,
+                price: 850,
+                category: "Мёд",
+                available: true,
                 imageUrls: ["https://via.placeholder.com/300x200?text=Липовый+Мёд"]
             },
             {
@@ -45,11 +62,19 @@ class ProductStore {
 
     renderProducts() {
         const container = document.getElementById('products-container');
+
+        if (this.products.length === 0) {
+            container.innerHTML = '<p>❌ Товары временно недоступны</p>';
+            return;
+        }
+
         container.innerHTML = '';
 
         this.products.forEach(product => {
-            const productCard = this.createProductCard(product);
-            container.appendChild(productCard);
+            if (product.available) {
+                const productCard = this.createProductCard(product);
+                container.appendChild(productCard);
+            }
         });
     }
 
@@ -58,12 +83,16 @@ class ProductStore {
         card.className = 'product-card';
 
         card.innerHTML = `
-            <img src="${product.imageUrls[0] || 'https://via.placeholder.com/300x200'}"
-                 alt="${product.name}">
+            <img src="${product.imageUrls[0]}" alt="${product.name}">
             <h3>${product.name}</h3>
-            <p>${product.description}</p>
+            <p class="description">${product.description}</p>
+            <p class="category">Категория: ${product.category}</p>
+            <p class="amount">${product.amount || ''}</p>
             <div class="price">${product.price} руб.</div>
-            <button onclick="orderProduct('${product.id}')">🛒 Заказать</button>
+            <p class="stock">${product.stock > 0 ? `В наличии: ${product.stock} шт.` : 'Под заказ'}</p>
+            <button onclick="orderProduct('${product.id}')" class="order-btn">
+                🛒 Заказать в Telegram
+            </button>
         `;
 
         return card;
@@ -75,10 +104,42 @@ function orderProduct(productId) {
     const product = productStore.products.find(p => p.id === productId);
     if (product) {
         const message = `Заказ: ${product.name} - ${product.price} руб.`;
-        const telegramUrl = `https://t.me/your_bot?start=order_${productId}`;
+        // Замените YOUR_BOT_NAME на имя вашего бота
+        const telegramUrl = `https://t.me/farmershop72_bot?start=order_${productId}`;
         window.open(telegramUrl, '_blank');
     }
 }
 
+// Поиск товаров
+function searchProducts() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const container = document.getElementById('products-container');
+
+    container.innerHTML = '';
+
+    const filteredProducts = productStore.products.filter(product =>
+        product.available && (
+            product.name.toLowerCase().includes(searchTerm) ||
+            product.description.toLowerCase().includes(searchTerm) ||
+            product.category.toLowerCase().includes(searchTerm)
+        )
+    );
+
+    if (filteredProducts.length === 0) {
+        container.innerHTML = '<p>Товары не найдены</p>';
+        return;
+    }
+
+    filteredProducts.forEach(product => {
+        const productCard = productStore.createProductCard(product);
+        container.appendChild(productCard);
+    });
+}
+
 // Инициализация магазина
 const productStore = new ProductStore();
+
+// Обновляем товары каждые 5 минут
+setInterval(() => {
+    productStore.init();
+}, 300000);

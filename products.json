@@ -5,7 +5,9 @@
     "price": 850,
     "category": "Мёд",
     "available": true,
-    "stock": 10
+    "stock": 10,
+    "amount": "500г",
+    "imageUrls": ["https://via.placeholder.com/300x200?text=Липовый+Мёд"]
   },
   "2": {
     "name": "Мёд гречишный",
@@ -13,6 +15,18 @@
     "price": 790,
     "category": "Мёд",
     "available": true,
-    "stock": 5
+    "stock": 5,
+    "amount": "500г",
+    "imageUrls": ["https://via.placeholder.com/300x200?text=Гречишный+Мёд"]
+  },
+  "3": {
+    "name": "Сметана деревенская",
+    "description": "Натуральная сметана из коровьего молока",
+    "price": 120,
+    "category": "Молочные продукты",
+    "available": true,
+    "stock": 8,
+    "amount": "250г",
+    "imageUrls": ["https://via.placeholder.com/300x200?text=Сметана"]
   }
 }
